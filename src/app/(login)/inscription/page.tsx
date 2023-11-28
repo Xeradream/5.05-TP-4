@@ -4,6 +4,7 @@ import {SectionContainer} from "tp-kit/components";
 import { z } from 'zod';
 import { useForm, zodResolver } from '@mantine/form';
 import { PasswordInput, TextInput, Button, Box, Group } from '@mantine/core';
+import Link from "next/link";
 
 const schema = z.object({
     name: z.string().min(2, { message: 'Name should have at least 2 letters' }),
@@ -23,32 +24,38 @@ export default function Inscription() {
         });
 
         return (
-            <Box maw={340} mx="auto">
-                <form onSubmit={form.onSubmit((values) => console.log(values))}>
-                    <TextInput
-                        withAsterisk
-                        label="Email"
-                        placeholder="example@mail.com"
-                        {...form.getInputProps('email')}
-                    />
+            <SectionContainer wrapperClassName="max-w-5xl">
+            <Box maw={350} mx="auto" className="shadow-md my-5 bg-white rounded">
+                <form onSubmit={form.onSubmit((values) => console.log(values))} className="p-5">
+                    <h1 className="mb-3">INSCRIPTION</h1>
                     <TextInput
                         withAsterisk
                         label="Name"
-                        placeholder=""
+                        placeholder="John Doe"
+                        description="Le nom qui sera utilisé pour vos commandes"
                         mt="sm"
                         {...form.getInputProps('name')}
                     />
+                    <TextInput
+                        withAsterisk
+                        label="Adresse email"
+                        placeholder="example@mail.com"
+                        {...form.getInputProps('email')}
+                    />
                     <PasswordInput
                         withAsterisk
-                        label="Password"
+                        label="Mot de passe"
+                        placeholder=""
+                        {...form.getInputProps('password')}
                     />
 
-                    <Group justify="flex-end" mt="xl">
-                    <Button type="submit" className="bg-green-600 flex justify-center">
-                    S'inscrire
+                    <Button type="submit" className="bg-green-600 my-5 items-center hover:bg-green-600 h-12"
+                            fullWidth="true">
+                        S'inscrire
                     </Button>
-                    </Group>
+                    <Link href={'../connexion'}><p className="text-sm text-center text-green">Déjà un compte ? Se connecter</p></Link>
                 </form>
             </Box>
+        </SectionContainer>
         );
     }
