@@ -7,6 +7,8 @@ import {SectionContainer, NoticeMessage} from "tp-kit/components";
 import Link from "next/link";
 import {useState, useEffect} from "react";
 import {useZodI18n} from "tp-kit/components/providers";
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { useRouter } from 'next/navigation'
 
 const schema = z.object({
     name: z.string().min(2),
@@ -18,6 +20,33 @@ const schema = z.object({
 type FormValues = z.infer<typeof schema>;
 
 export const Form = function() {
+
+    const [email, setEmail] = useState('')
+    const [password, setPassword] = useState('')
+    const router = useRouter()
+    const supabase = createClientComponentClient()
+
+    const handleSignUp = async (values) => {
+
+        const result = await supabase.auth.signUp({
+            email: values.email,
+            password: values.password,
+            options: {
+                emailRedirectTo: `${location.origin}/auth/callback`,
+                data: {
+                    name: values.name,
+                }
+            },
+        })
+
+        console.log(result);
+
+        if (result.error != null) {
+            error("Cette adresse n'est pas disponible.");
+        } else {
+            success("Votre inscription a bien été prise en compte. Validez votre adresse mail pour vous connecter");
+        }
+    }
 
     useZodI18n(z);
 
@@ -32,11 +61,11 @@ export const Form = function() {
 
     const [notices, setNotices] = useState([]);
 
-    function Error(message) {
+    function error(message) {
         setNotices([...notices, {type: "error", message}]);
     }
 
-    function Success(message) {
+    function success(message) {
         setNotices([...notices, {type: "success", message}]);
     }
 
@@ -50,13 +79,7 @@ export const Form = function() {
 
                 <h1 className="mb-3">INSCRIPTION</h1>
 
-                <form onSubmit={form.onSubmit((values) => {
-                    if (values.name === 'error') {
-                        Error("Cette adresse n'est pas disponible");
-                    } else {
-                        Success("Votre inscription a bien été prise en compte. Validez votre adresse mail pour vous connecter");
-                    }
-                })}>
+                <form onSubmit={form.onSubmit((handleSignUp))}>
 
                     <TextInput
                         withAsterisk
