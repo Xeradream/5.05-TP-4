@@ -19,7 +19,7 @@ const OrderTable: FC<Props> = memo(function ({ orders }) {
     [router],
   );
 
-  return <OrderTableLayout orders={orders} onRowClick={handleRowClic} />;
+  return <OrderTableLayout orders={orders} onRowClick={(order) => {router.push('/mon-compte/commandes/${order.id}')}} />;
 });
 
 OrderTable.displayName = "OrderTable";

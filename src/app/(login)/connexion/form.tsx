@@ -7,6 +7,9 @@ import Link from "next/link";
 import {NoticeMessage, SectionContainer} from "tp-kit/components";
 import {useZodI18n} from "tp-kit/components/providers";
 import {useState} from "react";
+import {redirect, useRouter} from "next/navigation";
+import {createSupabaseClient} from "@supabase/auth-helpers-shared";
+import {createClientComponentClient} from "@supabase/auth-helpers-nextjs";
 
 const schema = z.object({
     email: z.string().email().nonempty(),
@@ -19,6 +22,10 @@ export const Form = function () {
     // Applique les traductions à zod
     useZodI18n(z);
 
+    const router = useRouter();
+
+    const supabase = createClientComponentClient();
+
     const form = useForm<FormValues>({
         validate: zodResolver(schema),
         initialValues: {
@@ -27,31 +34,30 @@ export const Form = function () {
         },
     });
 
-    const [notices, setNotices] = useState([]);
 
-    function Error(message) {
-        setNotices([...notices, {type: "error", message}]);
+    const handleSignIn = async (values: {email:string, password:string}) => {
+        console.log(1)
+
+        const signin = await supabase.auth.signInWithPassword({
+            email: values.email,
+            password: values.password,
+        });
+
+        console.log(2)
+
+        if (signin.error) {
+            console.log(signin.error);
+        } else{
+            router.push('/mon-compte')
+            router.refresh()
+        }
     }
-
-    function Success(message) {
-        setNotices([...notices, {type: "success", message}]);
-    }
-
 
     return (
         <SectionContainer wrapperClassName="max-w-5xl">
             <Box maw={350} mx="auto" className="shadow-md my-5 bg-white rounded">
-                <form onSubmit={form.onSubmit((values) => {
-                    if (values.name === 'error') {
-                        Error("Cette adresse n'est pas disponible.");
-                    } else {
-                        Success("Votre inscription a bien été prise en compte. Validez votre adresse mail pour vous connecter");
-                    }
-                })} className="p-5">
+                <form className="p-5" onSubmit={form.onSubmit(values => handleSignIn(values))}>
                     <h1 className="mb-3">CONNEXION</h1>
-                    {notices.map((notice, i) => (
-                        <NoticeMessage key={i}{...notice}/>
-                    ))}
                     <TextInput
                         withAsterisk
                         label="Adresse email"
@@ -66,7 +72,7 @@ export const Form = function () {
                     />
 
                     <Button type="submit" className="bg-green-600 my-5 h-75 items-center hover:bg-green-600 h-12"
-                            fullWidth="true">
+                            fullWidth>
                         Me connecter
                     </Button>
                     <Link href={'../inscription'}><p className="text-sm text-center text-green">Créer un compte</p>

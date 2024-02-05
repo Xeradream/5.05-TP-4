@@ -3,7 +3,7 @@
 import {ZodI18nProvider} from "tp-kit/components/providers";
 import {Form} from "./form";
 
-export default function connexion() {
+export default function Connexion() {
 
     return <ZodI18nProvider><Form/></ZodI18nProvider>;
 
