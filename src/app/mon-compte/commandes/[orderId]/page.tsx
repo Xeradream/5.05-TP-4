@@ -11,8 +11,8 @@ type Props = {
 }
 
 export default async function OrderDetailsPage({params}: NextPageProps<Props>) {
-  const orderId = parseInt(params.orderId);
-
+  const orderId : number = parseInt(params.orderId);
+  console.log(params.orderId)
   const order = await prisma.order.findUnique({
     where: {id: orderId},
     include: {
