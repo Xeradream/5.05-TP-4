@@ -13,6 +13,7 @@ export async function POST(req : Request) {
             status: 403
         })
     }
+    
     console.log("test")
     revalidatePath('/[categorySlug]/[productSlug]')
     return NextResponse.json({
